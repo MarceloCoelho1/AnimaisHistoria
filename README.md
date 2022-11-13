@@ -11,5 +11,7 @@ Funcionalidades:
 - tooltip;
 - modal;
 - scrool animado;
-- scrool smooth com js
+- scrool smooth com js;
+- animação com números;
+- menuMobile;
 
