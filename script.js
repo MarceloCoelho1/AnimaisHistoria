@@ -1,3 +1,5 @@
+// Images
+
 function initTabNav() {
     const tabMenu = document.querySelectorAll('.js-tabmenu li');
     const tabContent = document.querySelectorAll('.js-tabcontent section');
@@ -22,6 +24,8 @@ function initTabNav() {
 }
 initTabNav();
 
+// Accordion
+
 function initAccordion() {
     const accordionList = document.querySelectorAll('.js-accordion dt');
 
@@ -44,6 +48,8 @@ function initAccordion() {
 
 initAccordion();
 
+// Scroll Smooth
+
 function initScrollSuave() {
     const linksInternos = document.querySelectorAll('.js-menu a[href^="#"]');
 
@@ -65,6 +71,8 @@ function initScrollSuave() {
 }
 
 initScrollSuave();
+
+// Anima Scroll
 
 function initAnimaScroll() {
     const sections = document.querySelectorAll('.js-scroll');
@@ -89,4 +97,71 @@ if (sections.length) {
 }
 
 initAnimaScroll();
+
+// modal 
+
+const botaoAbrir = document.querySelector('[data-modal="abrir"]');
+const botaoFechar = document.querySelector('[data-modal="fechar"]');
+const containerModal = document.querySelector('[data-modal="container"]');
+
+
+if (botaoAbrir && botaoFechar && containerModal) {
+    function abrirModal(event) {
+        event.preventDefault();
+        containerModal.classList.add('ativo')
+        
+    }
+    
+    function fecharModal(event) {
+        event.preventDefault();
+        containerModal.classList.remove('ativo')
+    }
+    
+    function cliqueForaModal(event) {
+        if (event.target === this) {
+            fecharModal(event);
+        }
+        
+    }
+    
+    
+    botaoAbrir.addEventListener('click', abrirModal);
+    botaoFechar.addEventListener('click', fecharModal);
+    containerModal.addEventListener('click', cliqueForaModal);
+}
+
+// tooltip
+
+const tooltips = document.querySelectorAll('[data-tooltip]');
+
+function onMouseOver(event) {
+    const toolTipBox = criarTooltipBox(this)
+    this.addEventListener('mouseleave', function() {
+        toolTipBox.remove();
+    })
+    onMouseMove.toolTipBox = toolTipBox;
+    this.addEventListener('mousemove', onMouseMove)
+    
+}
+
+const onMouseMove = {
+    handleEvent(event) {
+        this.toolTipBox.style.top = event.pageY + 20 +'px';
+        this.toolTipBox.style.left = event.pageX + 20 + 'px';
+    }
+}
+
+
+function criarTooltipBox(element) {
+    const toolTipBox = document.createElement('div');
+    const text = element.getAttribute('aria-label');
+    toolTipBox.classList.add('tooltip');
+    toolTipBox.innerText = text;
+    document.body.appendChild(toolTipBox);
+    return toolTipBox;
+}
+
+tooltips.forEach((item)=> {
+    item.addEventListener('mouseover', onMouseOver)
+})
 
