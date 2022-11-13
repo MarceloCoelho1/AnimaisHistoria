@@ -178,28 +178,29 @@ dropDownMenus.forEach((menu) => {
 function handleClick(event) {
     event.preventDefault()
     this.classList.add('ativo')
-    outSideClick(this, () =>{
+    outSideClick(this, ['touchstart', 'click'], () =>{
         this.classList.remove('ativo')
     });
 }
 
 function outSideClick(element, events, callback) {
     const html = document.documentElement;
-    const outSide = 'data-outside'
+    const outSide = 'data-outside';
 
 
     if(!element.hasAttribute(outSide)) {
         events.forEach(userEvent => {
-            setTimeout(() => {html.addEventListener('click', handleOutSideClick)});
+            setTimeout(() => {html.addEventListener(userEvent, handleOutSideClick)});
         })
-        
         element.setAttribute(outSide, '')
     }
     
     function handleOutSideClick(event) {
         if (!element.contains(event.target)) {
-            element.removeAttribute(outSide, '')
-            html.removeEventListener('click', handleOutSideClick);
+            element.removeAttribute(outSide)
+            events.forEach(userEvent => {
+                setTimeout(() => {html.addEventListener(userEvent, handleOutSideClick)});
+            })
             callback();
             
         }
