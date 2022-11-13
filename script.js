@@ -165,3 +165,41 @@ tooltips.forEach((item)=> {
     item.addEventListener('mouseover', onMouseOver)
 })
 
+// initDropDown menu
+
+const dropDownMenus = document.querySelectorAll('[data-dropdown]');
+
+dropDownMenus.forEach((menu) => {
+    ['touchstart', 'click'].forEach((userEvent) => {
+        menu.addEventListener(userEvent, handleClick)
+    })
+})
+
+function handleClick(event) {
+    event.preventDefault()
+    this.classList.add('ativo')
+    outSideClick(this, () =>{
+        this.classList.remove('ativo')
+    });
+}
+
+function outSideClick(element, callback) {
+    const html = document.documentElement;
+    const outSide = 'data-outside'
+
+
+    if(!element.hasAttribute(outSide)) {
+        html.addEventListener('click', handleOutSideClick);
+        element.setAttribute(outSide, '')
+    }
+    
+    function handleOutSideClick(event) {
+        if (!element.contains(event.target)) {
+            element.removeAttribute(outSide, '')
+            html.removeEventListener('click', handleOutSideClick);
+            callback();
+            
+        }
+        
+    }
+}
