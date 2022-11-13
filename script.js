@@ -170,7 +170,7 @@ tooltips.forEach((item)=> {
 const dropDownMenus = document.querySelectorAll('[data-dropdown]');
 
 dropDownMenus.forEach((menu) => {
-    ['touchstart', 'click'].forEach((userEvent) => {
+    ['click'].forEach((userEvent) => {
         menu.addEventListener(userEvent, handleClick)
     })
 })
@@ -178,56 +178,59 @@ dropDownMenus.forEach((menu) => {
 function handleClick(event) {
     event.preventDefault()
     this.classList.add('ativo')
-    outSideClick(this, ['touchstart', 'click'], () =>{
+    outSideClick(this, ['click', 'touchstart'], () =>{
         this.classList.remove('ativo')
     });
 }
 
 function outSideClick(element, events, callback) {
     const html = document.documentElement;
-    const outSide = 'data-outside';
+    const outside = 'data-outside';
 
-
-    if(!element.hasAttribute(outSide)) {
+    if(!element.hasAttribute(outside)) {
         events.forEach(userEvent => {
-            setTimeout(() => {html.addEventListener(userEvent, handleOutSideClick)});
-        })
-        element.setAttribute(outSide, '')
+            setTimeout(() => html.addEventListener(userEvent, handleOutsideClick))
+        });
+       
+        element.setAttribute(outside, '');
     }
-    
-    function handleOutSideClick(event) {
-        if (!element.contains(event.target)) {
-            element.removeAttribute(outSide)
-            events.forEach(userEvent => {
-                setTimeout(() => {html.addEventListener(userEvent, handleOutSideClick)});
-            })
-            callback();
-            
+    function handleOutsideClick(event) {
+        if(!element.contains(event.target)) {
+        element.removeAttribute(outside);
+        events.forEach(userEvent => {
+            html.removeEventListener(userEvent, handleOutsideClick);
+        })
+        callback();
         }
-        
     }
 }
 
 // init menuMobile
 
-const menuButton = document.querySelector('[data-menu="button"]');
-const menuList = document.querySelector('[data-menu="list"]');
-const eventos = ['click', 'touchstart']
+function initMenuMobile() {
 
-if(menuButton) {
+
+    const menuButton = document.querySelector('[data-menu="button"]');
+    const menuList = document.querySelector('[data-menu="list"]');
+    const eventos = ['click', 'touchstart'];
+    
+    if(menuButton) {
     function openMenu(event) {
-        menuList.classList.add('ativo')
-        menuButton.classList.add('ativo')
-        outSideClick(menuList, ['click', 'touchstart'], ()=> {
-            menuList.classList.remove('ativo')
-            menuButton.classList.remove('ativo')
+        menuList.classList.add('ativo');
+        menuButton.classList.add('ativo');
+        outSideClick(menuList, eventos, () => {
+            
+            menuList.classList.remove('ativo');
+            menuButton.classList.remove('ativo');
+        
         })
     }
-    eventos.forEach((evento) => {
-        menuButton.addEventListener(evento, openMenu)
-    })
-    
+    eventos.forEach(evento => menuButton.addEventListener(evento, openMenu));
+    }
+
 }
+
+initMenuMobile()
 
 // anima numeros
 
@@ -263,3 +266,48 @@ const observeTarget = document.querySelector('.numeros')
 const observer = new MutationObserver(handleMutation);
 
 observer.observe(observeTarget, {attributes: true})
+
+// horário de funcionamento
+
+const funcionamento = document.querySelector('[data-semana]');
+const diasSemana = funcionamento.dataset.semana.split(',').map(Number);
+const horarioSemana = funcionamento.dataset.horario.split(',').map(Number);
+
+
+const dataAgora = new Date();
+const hoje = dataAgora.getDay()
+const horaAgora = dataAgora.getHours();
+
+const semanaAberto = diasSemana.indexOf(hoje) !== -1;
+
+let horarioAberto = (horaAgora >= horarioSemana[0] && horaAgora < horarioSemana[1])
+
+
+if(semanaAberto && horarioAberto) {
+    funcionamento.classList.add('aberto')
+} else {
+    funcionamento.classList.add('fechado')
+}
+
+
+// fetch bitcoin
+// https://blockchain.info/ticker
+
+async function btcApi() {
+    try {
+        const responseFetch = await fetch('https://blockchain.info/ticker');
+        const responseJson = await responseFetch.json();
+        const btcReal = (1000 / (await responseJson.BRL.buy)).toFixed(4) 
+        
+        const btcSpan = document.querySelector('.btc-preco');
+        
+        btcSpan.innerHTML = btcReal
+    } catch (error) {
+        console.log(error)
+    }
+    
+    
+}
+
+
+btcApi();
