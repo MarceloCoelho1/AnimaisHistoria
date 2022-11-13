@@ -183,13 +183,16 @@ function handleClick(event) {
     });
 }
 
-function outSideClick(element, callback) {
+function outSideClick(element, events, callback) {
     const html = document.documentElement;
     const outSide = 'data-outside'
 
 
     if(!element.hasAttribute(outSide)) {
-        html.addEventListener('click', handleOutSideClick);
+        events.forEach(userEvent => {
+            setTimeout(() => {html.addEventListener('click', handleOutSideClick)});
+        })
+        
         element.setAttribute(outSide, '')
     }
     
@@ -203,3 +206,59 @@ function outSideClick(element, callback) {
         
     }
 }
+
+// init menuMobile
+
+const menuButton = document.querySelector('[data-menu="button"]');
+const menuList = document.querySelector('[data-menu="list"]');
+const eventos = ['click', 'touchstart']
+
+if(menuButton) {
+    function openMenu(event) {
+        menuList.classList.add('ativo')
+        menuButton.classList.add('ativo')
+        outSideClick(menuList, ['click', 'touchstart'], ()=> {
+            menuList.classList.remove('ativo')
+            menuButton.classList.remove('ativo')
+        })
+    }
+    eventos.forEach((evento) => {
+        menuButton.addEventListener(evento, openMenu)
+    })
+    
+}
+
+// anima numeros
+
+function animaNumeros() {
+    const numeros = document.querySelectorAll('[data-numero]');
+
+    numeros.forEach((numero) => {
+        const total = +numero.innerText; // o + na frente do número.innertext é para transformar string em numero
+        const incremento = Math.floor(total / 100)
+
+        let start = 0;
+        const timer = setInterval(()=> {
+            start = start + incremento;
+            numero.innerText = start;
+            if(start > total) {
+                numero.innerText = total
+                clearInterval(timer); 
+            }
+        }, 25)
+    })
+}
+
+
+
+function handleMutation(Mutation) {
+    if((Mutation[0].target.classList.contains('ativo'))) {
+        observer.disconnect();
+        animaNumeros();
+    }
+}
+
+const observeTarget = document.querySelector('.numeros')
+const observer = new MutationObserver(handleMutation);
+
+observer.observe(observeTarget, {attributes: true})
