@@ -14,4 +14,5 @@ Funcionalidades:
 - scrool smooth com js;
 - animação com números;
 - menuMobile;
+- Horario de funcionamento animado;
 
